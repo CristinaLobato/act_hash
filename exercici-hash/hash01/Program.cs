@@ -31,10 +31,15 @@ namespace hash01
                         byte[] hashResult = SHA512.ComputeHash(bytesIn);
 
                         // Convertir el hash a un string hexadecimal
-                        string hashText = BitConverter.ToString(hashResult).Replace("-", string.Empty);
+                        string textoHash = BitConverter.ToString(hashResult).Replace("-", string.Empty);
 
                         Console.WriteLine($"El hash del archivo es:  {rutaFitcher}:");
-                        Console.WriteLine(hashText);
+                        Console.WriteLine(textoHash);
+
+                        // Guardar archivo Hash con extensión .SHA:
+                        string rutaSHA = Path.ChangeExtension(rutaFitcher, ".SHA");
+                        File.WriteAllText(rutaSHA, textoHash);
+                        Console.WriteLine($"El hash se ha guardado en el archivo: {rutaSHA}");
                     }
                 }
                 else
