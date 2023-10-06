@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -10,35 +11,46 @@ namespace hash01
         static void Main(string[] args)
         {
 
-            String textIn = null;
-            Console.Write("Entra text: ");
-            while (string.IsNullOrEmpty(textIn))
+            String rutaFitcher = null;
+            Console.Write("Introduce la ruta del archivo de texto: ");
+            rutaFitcher = Console.ReadLine();
+         
+            try
             {
-                Console.Clear();
-                Console.Write("Entra text: "); 
-                textIn = Console.ReadLine();
+                if (File.Exists(rutaFitcher))
+                {
+                    // Leer el contenido del archivo
+                    string text = File.ReadAllText(rutaFitcher);
+
+                    // Convertir el texto a un array de bytes
+                    byte[] bytesIn = Encoding.UTF8.GetBytes(text);
+
+                    using (SHA512Managed SHA512 = new SHA512Managed())
+                    {
+                        // Calcular el hash
+                        byte[] hashResult = SHA512.ComputeHash(bytesIn);
+
+                        // Convertir el hash a un string hexadecimal
+                        string hashText = BitConverter.ToString(hashResult).Replace("-", string.Empty);
+
+                        Console.WriteLine($"El hash del archivo es:  {rutaFitcher}:");
+                        Console.WriteLine(hashText);
+                    }
+                }
+                else
+                {
+                    Console.WriteLine($"¡ERROR! El archivo {rutaFitcher} no existe.");
+                }
             }
-            // Convertim l'string a un array de bytes
-            byte[] bytesIn = Encoding.UTF8.GetBytes(textIn);
-            // Instanciar classe per fer hash
-
-            // fent servir using ja es delimita el seu àmbit i no cal fer dispose
-            using (SHA512Managed SHA512 = new SHA512Managed())
+            catch (IOException e)
             {
-                // Calcular hash
-                byte[] hashResult = SHA512.ComputeHash(bytesIn);
-
-                // Si volem mostrar el hash per pantalla o guardar-lo en un arxiu de text
-                // cal convertir-lo a un string
-
-                String textOut = BitConverter.ToString(hashResult).Replace("-", string.Empty);
-                Console.WriteLine("Hash del text{0}", textIn);
-                Console.WriteLine(textOut);
-                Console.ReadKey();
+                Console.WriteLine($"Ha habido un error al leer el archivo: {e.Message}");
+            }
+           
+            Console.ReadKey();
 
 
             }
 
         }
     }
-}
